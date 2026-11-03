@@ -6,6 +6,12 @@ patch series, arcomium/flags.gn into its GN flags and a step that copies
 arcomium/branding over the source tree after patching, runs the upstream
 build.sh with ad-hoc signing, then restores the submodule. Extra arguments go
 to the upstream build.sh (for example `-d` to reuse the downloaded sources).
+
+  --fast   a quicker local build: no LTO, PGO or debug symbols
+
+Chromium 156's linker cannot read the libraries of macOS SDK 27, so the build
+uses SDK 26.5 from the Command Line Tools when it is installed, unless `-s`
+names another one.
 """
 
 import os
@@ -30,6 +36,18 @@ BRANDING_STEP = 'cp -R {branding!r}/. "$_src_dir/"\n'
 # depot_tools needs Python 3.13 or older; Homebrew's python3 may be newer.
 PYTHON = '/opt/homebrew/bin/python3.13'
 
+# Chromium 156's official SDK; its lld rejects the .tbd files of SDK 27.
+DEFAULT_SDK = Path('/Library/Developer/CommandLineTools/SDKs/MacOSX26.5.sdk')
+
+FAST_FLAGS = """
+# --fast: a quicker local build; releases use the flags above.
+is_official_build=false
+use_thin_lto=false
+chrome_pgo_phase=0
+symbol_level=0
+blink_symbol_level=0
+"""
+
 
 def read_series(path):
     lines = path.read_text(encoding='utf-8').splitlines()
@@ -39,6 +57,11 @@ def read_series(path):
 def main():
     if not Path(PYTHON).exists():
         sys.exit(f'{PYTHON} not found: brew install python@3.13')
+    args = sys.argv[1:]
+    fast = '--fast' in args
+    args = [a for a in args if a != '--fast']
+    if '-s' not in args and DEFAULT_SDK.exists():
+        args = ['-s', str(DEFAULT_SDK), *args]
     series = UPSTREAM / 'patches' / 'series'
     flags = UPSTREAM / 'flags.macos.gn'
     upstream_build = UPSTREAM / 'build.sh'
@@ -53,9 +76,10 @@ def main():
         ours = ['arcomium/' + p for p in read_series(OUR_PATCHES / 'series')]
         series.write_text(originals[series].rstrip('\n') + '\n' + '\n'.join(ours) + '\n',
                           encoding='utf-8')
-        if OUR_FLAGS.exists():
-            flags.write_text(originals[flags].rstrip('\n') + '\n' +
-                             OUR_FLAGS.read_text(encoding='utf-8'), encoding='utf-8')
+        extra = OUR_FLAGS.read_text(encoding='utf-8') if OUR_FLAGS.exists() else ''
+        if fast:
+            extra += FAST_FLAGS
+        flags.write_text(originals[flags].rstrip('\n') + '\n' + extra, encoding='utf-8')
         if OUR_BRANDING.exists():
             text = originals[upstream_build]
             if BRANDING_ANCHOR not in text:
@@ -69,7 +93,7 @@ def main():
             env = dict(os.environ)
             env['PATH'] = os.pathsep.join([shims, '/opt/homebrew/bin', env.get('PATH', '')])
             env.setdefault('MACOS_AD_HOC_SIGNING', '1')
-            cmd = ['./build.sh', *sys.argv[1:]]
+            cmd = ['./build.sh', *args]
             return subprocess.run(cmd, cwd=UPSTREAM, env=env, check=False).returncode
     finally:
         for path, text in originals.items():
