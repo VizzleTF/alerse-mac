@@ -14,5 +14,5 @@ if ! grep -q selected_macos_sdk out/Default/args.gn; then
 fi
 [ -x third_party/rust-toolchain/bin/bindgen ] || ./tools/rust/build_bindgen.py --skip-test
 ./out/Default/gn gen out/Default --fail-on-unused-args
-ninja -C out/Default chrome chromedriver
+ninja -C out/Default -j ${NINJA_JOBS:-10} chrome chromedriver
 echo BUILD_DONE
