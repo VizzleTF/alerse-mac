@@ -6,7 +6,21 @@ on ungoogled-chromium. This repository builds the
 [ungoogled-chromium-macos](https://github.com/ungoogled-software/ungoogled-chromium-macos);
 both are git submodules.
 
-Builds for Apple Silicon. There are no packaged releases yet.
+Builds for Apple Silicon.
+
+## Install
+
+1. Download `arcomium_<version>_macos_arm64.dmg` from
+   [Releases](https://github.com/VizzleTF/arcomium-mac/releases).
+2. Open it and drag Arcomium to Applications.
+3. Remove the quarantine flag. The app is signed without an Apple certificate, so macOS
+   otherwise reports it as damaged:
+   ```sh
+   xattr -dr com.apple.quarantine /Applications/Arcomium.app
+   ```
+4. Open Arcomium. To sync with your other devices, open `chrome://arcomium-sync`.
+
+Updates do not install themselves: download the new dmg and repeat steps 2–3.
 
 ## Build from source
 
@@ -34,6 +48,17 @@ optimized build and takes longer.
 `build.py` adds the Arcomium patches, `arcomium/flags.gn` and the branding files to
 ungoogled-chromium-macos, runs its `build.sh` with ad-hoc signing and Python 3.13, and
 restores the submodule afterwards. Other arguments go to `build.sh`.
+
+### Package
+
+```sh
+./package.sh v156.0.8078.79-1
+```
+
+Signs the app ad hoc and writes
+`ungoogled-chromium-macos/build/arcomium_v156.0.8078.79-1_macos_arm64.dmg`. Without a
+Developer ID the bundles are signed without the hardened runtime: with it, macOS refuses
+to load the ad hoc signed framework.
 
 ### Resume or rebuild
 
