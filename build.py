@@ -47,6 +47,7 @@ chrome_pgo_phase=0
 symbol_level=0
 blink_symbol_level=0
 enable_precompiled_headers=false
+disable_fieldtrial_testing_config=true
 """
 
 
