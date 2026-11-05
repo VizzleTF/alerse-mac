@@ -3,7 +3,7 @@
 
 Injects the patches of the arcomium submodule into ungoogled-chromium-macos'
 patch series, arcomium/flags.gn into its GN flags and a step that copies
-arcomium/branding over the source tree after patching, runs the upstream
+arcomium/src and arcomium/branding over the source tree after patching, runs the upstream
 build.sh with ad-hoc signing, then restores the submodule. Extra arguments go
 to the upstream build.sh (for example `-d` to reuse the downloaded sources).
 
@@ -27,14 +27,17 @@ CORE = ROOT / 'arcomium'
 OUR_PATCHES = CORE / 'patches'
 OUR_FLAGS = CORE / 'flags.gn'
 OUR_BRANDING = CORE / 'branding'
+OUR_SOURCES = CORE / 'src'
 
 OUR_RENAME = CORE / 'tools' / 'rename_product.py'
 
-# Inserted into the upstream build.sh after its patches: binary branding files
-# cannot travel in patches, and renaming the product in the strings moves
-# hundreds of translations, which a script does better than a patch.
+# Inserted into the upstream build.sh after its patches: Arcomium's own source
+# files and binary branding files are copied over the tree, not patched in, and
+# renaming the product in the strings moves hundreds of translations, which a
+# script does better than a patch.
 BRANDING_ANCHOR = 'python3 "$_main_repo/utils/domain_substitution.py"'
-BRANDING_STEP = ('cp -R {branding!r}/. "$_src_dir/"\n'
+BRANDING_STEP = ('cp -R {sources!r}/. "$_src_dir/"\n'
+                 'cp -R {branding!r}/. "$_src_dir/"\n'
                  'python3 {rename!r} "$_src_dir"\n')
 
 # depot_tools needs Python 3.13 or older; Homebrew's python3 may be newer.
@@ -90,7 +93,8 @@ def main():
             text = originals[upstream_build]
             if BRANDING_ANCHOR not in text:
                 sys.exit('upstream build.sh changed: cannot add the branding step')
-            step = BRANDING_STEP.format(branding=str(OUR_BRANDING), rename=str(OUR_RENAME))
+            step = BRANDING_STEP.format(sources=str(OUR_SOURCES), branding=str(OUR_BRANDING),
+                                        rename=str(OUR_RENAME))
             upstream_build.write_text(text.replace(BRANDING_ANCHOR, step + BRANDING_ANCHOR, 1),
                                       encoding='utf-8')
 
