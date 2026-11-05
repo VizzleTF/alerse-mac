@@ -29,8 +29,9 @@ cat > "$ARCOMIUM_ENTITLEMENTS/library.plist" <<'PLIST'
 </plist>
 PLIST
 for plist in "$ARCOMIUM_ENTITLEMENTS"/*.plist; do
-  plutil -insert com.apple.security.cs.disable-library-validation -bool true \
-    "$plist"
+  key=:com.apple.security.cs.disable-library-validation
+  /usr/libexec/PlistBuddy -c "Set $key true" "$plist" 2>/dev/null ||
+    /usr/libexec/PlistBuddy -c "Add $key bool true" "$plist"
 done
 export ARCOMIUM_ENTITLEMENTS
 
