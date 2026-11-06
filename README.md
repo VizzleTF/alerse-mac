@@ -52,11 +52,11 @@ restores the submodule afterwards. Other arguments go to `build.sh`.
 ### Package
 
 ```sh
-./package.sh v156.0.8078.79-1
+./package.sh v0.1.0
 ```
 
 Signs the app ad hoc and writes
-`ungoogled-chromium-macos/build/arcomium_v156.0.8078.79-1_macos_arm64.dmg`. Without a
+`ungoogled-chromium-macos/build/arcomium_v0.1.0_macos_arm64.dmg`. Without a
 Developer ID the bundles are signed without the hardened runtime: with it, macOS refuses
 to load the ad hoc signed framework.
 
