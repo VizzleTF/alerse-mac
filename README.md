@@ -6,7 +6,15 @@ on ungoogled-chromium. This repository builds the
 [ungoogled-chromium-macos](https://github.com/ungoogled-software/ungoogled-chromium-macos);
 both are git submodules.
 
-Builds for Apple Silicon.
+Builds for Apple Silicon, on Chromium 156 until ungoogled-chromium-macos releases 157.
+Builds are made locally, not in CI; the releases so far are `--fast` pre-releases,
+without LTO or PGO.
+
+On macOS Arcomium keeps the platform's look, as Arc does there: the window buttons and
+the menu bar stay, the sidebar's logo opens Chromium's app menu, and there is no Arc for
+Windows top bar and no Alt+1 to Alt+9 (Option+digit types characters). The profile is
+in `~/Library/Application Support/Arcomium`, Arcomium's own bundle ID; a profile from
+older builds in `Chromium` there is moved on first start.
 
 ## Install
 
@@ -20,7 +28,11 @@ Builds for Apple Silicon.
    ```
 4. Open Arcomium. To sync with your other devices, open `chrome://arcomium-sync`.
 
-Updates do not install themselves: download the new dmg and repeat steps 2–3.
+Updates do not install themselves: download the new dmg and repeat steps 2–3. The
+current pre-release builds show no update notice, so check the Releases page by hand.
+The app menu's "Update to Arcomium X.Y.Z" item (and Import from Another Browser) come
+with the first macOS build on Chromium 157, and the notice offers only full releases,
+never pre-releases.
 
 ## Build from source
 
@@ -43,7 +55,8 @@ python3 build.py --fast arm64
 
 The browser is `ungoogled-chromium-macos/build/src/out/Default/Arcomium.app`. A first
 `--fast` build takes about 5 hours on an M1 Max; without `--fast` it is an official,
-optimized build and takes longer.
+optimized build (ThinLTO and PGO) and takes longer. `--fast` builds without LTO, PGO,
+debug symbols, precompiled headers and Chromium's field trial testing config.
 
 `build.py` adds the Arcomium patches, `arcomium/flags.gn` and the branding files to
 ungoogled-chromium-macos, runs its `build.sh` with ad-hoc signing and Python 3.13, and
@@ -56,9 +69,11 @@ restores the submodule afterwards. Other arguments go to `build.sh`.
 ```
 
 Signs the app ad hoc and writes
-`ungoogled-chromium-macos/build/arcomium_v0.1.0_macos_arm64.dmg`. Without a
-Developer ID the bundles are signed without the hardened runtime: with it, macOS refuses
-to load the ad hoc signed framework.
+`ungoogled-chromium-macos/build/arcomium_v0.1.0_macos_arm64.dmg`. The bundles keep the
+hardened runtime, but without a Developer ID library validation would reject the ad hoc
+signed framework (the Team IDs differ), so they are signed without the `library` option
+and with the `disable-library-validation` entitlement. The app is not notarized.
+`package.sh` stops if Chromium's signing script changes upstream.
 
 ### Resume or rebuild
 
