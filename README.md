@@ -1,4 +1,10 @@
-# Alerse for macOS
+<p align="center">
+  <img src="https://raw.githubusercontent.com/VizzleTF/alerse/main/artwork/alerse_256.png" width="120" alt="The Alerse icon">
+</p>
+
+<h1 align="center">Alerse for macOS</h1>
+
+<p align="center">The macOS build of Alerse, a sidebar browser for people moving from Arc.</p>
 
 macOS builds of [Alerse](https://github.com/VizzleTF/alerse) (called Arcomium up to
 0.1.7), an Arc-style browser on ungoogled-chromium. This repository builds the
@@ -12,7 +18,10 @@ Builds are made locally, not in CI. Releases are pre-releases; up to 0.1.0 they 
 
 On macOS Alerse keeps the platform's look, as Arc does there: the window buttons and
 the menu bar stay, the sidebar's logo opens Chromium's app menu, and there is no Arc for
-Windows top bar and no Alt+1 to Alt+9 (Option+digit types characters). The profile is
+Windows top bar and no Alt+1 to Alt+9 (Option+digit types characters). The sidebar,
+the Space bar, the command bar and the rest are the same on every platform; see
+[Features](https://github.com/VizzleTF/alerse#features) and
+[Differences from Arc](https://github.com/VizzleTF/alerse#differences-from-arc). The profile is
 in `~/Library/Application Support/Alerse`, with Alerse's own bundle ID,
 `io.github.vizzletf.alerse`.
 
@@ -22,6 +31,8 @@ profile of Arcomium's older builds in `Chromium` there) to `Alerse`, with your S
 pinned items, tabs, passwords and extensions; while Arcomium still runs, Alerse leaves the
 profile where it is and moves it at a later start. Then drag Arcomium to the Trash. See
 [Name](https://github.com/VizzleTF/alerse/blob/main/docs/design.md#name).
+
+![Alerse on macOS: the Personal Space with pinned items, a Reading folder and favorites](https://raw.githubusercontent.com/VizzleTF/alerse/main/docs/images/sidebar.png)
 
 ## Install
 
