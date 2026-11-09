@@ -7,8 +7,8 @@ on ungoogled-chromium. This repository builds the
 both are git submodules.
 
 Builds for Apple Silicon, on Chromium 156 until ungoogled-chromium-macos releases 157.
-Builds are made locally, not in CI; the releases so far are `--fast` pre-releases,
-without LTO or PGO.
+Builds are made locally, not in CI. Releases are pre-releases; up to 0.1.0 they were
+`--fast` builds, from 0.1.7 official ones (ThinLTO and PGO).
 
 On macOS Arcomium keeps the platform's look, as Arc does there: the window buttons and
 the menu bar stay, the sidebar's logo opens Chromium's app menu, and there is no Arc for
@@ -62,14 +62,23 @@ debug symbols, precompiled headers and Chromium's field trial testing config.
 ungoogled-chromium-macos, runs its `build.sh` with ad-hoc signing and Python 3.13, and
 restores the submodule afterwards. Other arguments go to `build.sh`.
 
+### Release build next to a `--fast` tree
+
+0.1.7 was built in the `--fast` tree's sources, in a second output directory with the
+release flags: `out/Release/args.gn` is `out/Default/args.gn` without the `--fast`
+block, with `mac_sdk_path = "//out/Release/sdk/selected_macos_sdk"` (a link to SDK
+26.5). `gn gen out/Release`, then `ninja -C out/Release -j 10 chrome` took about
+4 hours on an M1 Max (54,359 steps).
+
 ### Package
 
 ```sh
-./package.sh v0.1.0
+./package.sh v0.1.7                      # out/Default
+OUT_DIR=out/Release ./package.sh v0.1.7  # an official build in out/Release
 ```
 
 Signs the app ad hoc and writes
-`ungoogled-chromium-macos/build/arcomium_v0.1.0_macos_arm64.dmg`. The bundles keep the
+`ungoogled-chromium-macos/build/arcomium_v0.1.7_macos_arm64.dmg`. The bundles keep the
 hardened runtime, but without a Developer ID library validation would reject the ad hoc
 signed framework (the Team IDs differ), so they are signed without the `library` option
 and with the `disable-library-validation` entitlement. The app is not notarized.
