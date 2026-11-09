@@ -29,10 +29,9 @@ older builds in `Chromium` there is moved on first start.
 4. Open Arcomium. To sync with your other devices, open `chrome://arcomium-sync`.
 
 Updates do not install themselves: download the new dmg and repeat steps 2–3. The
-current pre-release builds show no update notice, so check the Releases page by hand.
-The app menu's "Update to Arcomium X.Y.Z" item (and Import from Another Browser) come
-with the first macOS build on Chromium 157, and the notice offers only full releases,
-never pre-releases.
+app menu's "Update to Arcomium X.Y.Z" item offers only full releases, never
+pre-releases, so while macOS builds are pre-releases check the Releases page by hand.
+Import from Another Browser is in the app menu from 0.1.7.
 
 ## Build from source
 
