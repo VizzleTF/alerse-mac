@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Signs the built Arcomium.app ad hoc and packages it into a dmg, with the
+# Signs the built Alerse.app ad hoc and packages it into a dmg, with the
 # upstream sign_and_package_app.sh, which names the bundles Chromium.
 #
-#   ./package.sh [VERSION]   # build/arcomium_VERSION_macos_arm64.dmg
+#   ./package.sh [VERSION]   # build/alerse_VERSION_macos_arm64.dmg
 #
 # OUT_DIR picks the build's output directory under build/src (out/Default by
 # default; out/Release for an official build next to a --fast one).
@@ -12,7 +12,7 @@ set -euo pipefail
 ROOT=$(cd "$(dirname "$0")" && pwd)
 UPSTREAM=$ROOT/ungoogled-chromium-macos
 VERSION=${1:-$(cat "$UPSTREAM/ungoogled-chromium/chromium_version.txt")}
-DMG=$UPSTREAM/build/arcomium_${VERSION}_macos_$(uname -m).dmg
+DMG=$UPSTREAM/build/alerse_${VERSION}_macos_$(uname -m).dmg
 OUT_DIR=${OUT_DIR:-out/Default}
 
 # Without a Developer ID, library validation rejects the ad hoc signed
@@ -39,7 +39,7 @@ for plist in "$ARCOMIUM_ENTITLEMENTS"/*.plist; do
 done
 export ARCOMIUM_ENTITLEMENTS
 
-sed -e 's/Chromium/Arcomium/g' \
+sed -e 's/Chromium/Alerse/g' \
   -e "s|/out/Default/|/$OUT_DIR/|" \
   -e 's/--options=restrict,library,runtime,kill/--options restrict,runtime,kill/' \
   -e 's/restrict,library,runtime,kill/restrict,runtime,kill/g' \

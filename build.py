@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build Arcomium for macOS: ungoogled-chromium-macos + Arcomium patches.
+"""Build Alerse for macOS: ungoogled-chromium-macos + Alerse patches.
 
 Injects the patches of the arcomium submodule into ungoogled-chromium-macos'
 patch series, arcomium/flags.gn into its GN flags and a step that copies
@@ -31,7 +31,7 @@ OUR_SOURCES = CORE / 'src'
 
 OUR_RENAME = CORE / 'tools' / 'rename_product.py'
 
-# Inserted into the upstream build.sh after its patches: Arcomium's own source
+# Inserted into the upstream build.sh after its patches: Alerse's own source
 # files and binary branding files are copied over the tree, not patched in, and
 # renaming the product in the strings moves hundreds of translations, which a
 # script does better than a patch. The script also numbers the release in

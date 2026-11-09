@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Resumes an Arcomium macOS build after build.sh stopped past patching.
+# Resumes an Alerse macOS build after build.sh stopped past patching.
 set -eux
 SDK=/Library/Developer/CommandLineTools/SDKs/MacOSX26.5.sdk
 SRC=$(cd "$(dirname "$0")" && pwd)/ungoogled-chromium-macos/build/src
