@@ -1,6 +1,6 @@
 [submodule "ungoogled-chromium-macos"]
 	path = ungoogled-chromium-macos
 	url = https://github.com/ungoogled-software/ungoogled-chromium-macos.git
-[submodule "arcomium"]
-	path = arcomium
+[submodule "alerse"]
+	path = alerse
 	url = https://github.com/VizzleTF/alerse.git

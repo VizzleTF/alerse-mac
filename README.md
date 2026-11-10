@@ -6,9 +6,9 @@
 
 <p align="center">The macOS build of Alerse, a sidebar browser for people moving from Arc.</p>
 
-macOS builds of [Alerse](https://github.com/VizzleTF/alerse) (called Arcomium up to
-0.1.7), an Arc-style browser on ungoogled-chromium. This repository builds the
-[arcomium](https://github.com/VizzleTF/alerse) patch series on top of
+macOS builds of [Alerse](https://github.com/VizzleTF/alerse), an Arc-style browser on
+ungoogled-chromium. This repository builds the
+[alerse](https://github.com/VizzleTF/alerse) patch series on top of
 [ungoogled-chromium-macos](https://github.com/ungoogled-software/ungoogled-chromium-macos);
 both are git submodules.
 
@@ -25,18 +25,15 @@ the Space bar, the command bar and the rest are the same on every platform; see
 in `~/Library/Application Support/Alerse`, with Alerse's own bundle ID,
 `io.github.vizzletf.alerse`.
 
-Coming from Arcomium (up to 0.1.7, `Arcomium.app`): quit Arcomium, install Alerse beside
-it and open it. Its first start moves `~/Library/Application Support/Arcomium` (or a
-profile of Arcomium's older builds in `Chromium` there) to `Alerse`, with your Spaces,
-pinned items, tabs, passwords and extensions; while Arcomium still runs, Alerse leaves the
-profile where it is and moves it at a later start. Then drag Arcomium to the Trash. See
-[Name](https://github.com/VizzleTF/alerse/blob/main/docs/design.md#name).
+A release before 0.1.8 is a different app: quit it and open Alerse, whose first start
+moves its profile to `~/Library/Application Support/Alerse`, then drag the old app to the
+Trash. See [Name](https://github.com/VizzleTF/alerse/blob/main/docs/design.md#name).
 
 ![Alerse on macOS: the Personal Space with pinned items, a Reading folder and favorites](https://raw.githubusercontent.com/VizzleTF/alerse/main/docs/images/sidebar.png)
 
 ## Install
 
-1. Download `alerse_<version>_macos_arm64.dmg` (`arcomium_<version>_...` up to 0.1.7) from
+1. Download `alerse_<version>_macos_arm64.dmg` from
    [Releases](https://github.com/VizzleTF/alerse-mac/releases).
 2. Open it and drag Alerse to Applications.
 3. Remove the quarantine flag. The app is signed without an Apple certificate, so macOS
@@ -44,7 +41,7 @@ profile where it is and moves it at a later start. Then drag Arcomium to the Tra
    ```sh
    xattr -dr com.apple.quarantine /Applications/Alerse.app
    ```
-4. Open Alerse. To sync with your other devices, open `chrome://arcomium-sync`.
+4. Open Alerse. To sync with your other devices, open `chrome://alerse-sync`.
 
 Updates do not install themselves: download the new dmg and repeat steps 2–3. The
 app menu's "Update to Alerse X.Y.Z" item offers only full releases, never
@@ -66,7 +63,7 @@ Import from Another Browser is in the app menu from 0.1.7.
 
 ```sh
 git clone --recurse-submodules https://github.com/VizzleTF/alerse-mac.git
-cd arcomium-mac
+cd alerse-mac
 python3 build.py --fast arm64
 ```
 
@@ -75,7 +72,7 @@ The browser is `ungoogled-chromium-macos/build/src/out/Default/Alerse.app`. A fi
 optimized build (ThinLTO and PGO) and takes longer. `--fast` builds without LTO, PGO,
 debug symbols, precompiled headers and Chromium's field trial testing config.
 
-`build.py` adds the Alerse patches, `arcomium/flags.gn` and the branding files to
+`build.py` adds the Alerse patches, `alerse/flags.gn` and the branding files to
 ungoogled-chromium-macos, runs its `build.sh` with ad-hoc signing and Python 3.13, and
 restores the submodule afterwards. Other arguments go to `build.sh`.
 
@@ -117,7 +114,7 @@ and with the `disable-library-validation` entitlement. The app is not notarized.
 
 ## Change the patches
 
-Patches live in the `arcomium` submodule; see
+Patches live in the `alerse` submodule; see
 [Writing and refreshing patches](https://github.com/VizzleTF/alerse/blob/main/docs/patching.md).
 
 ## License

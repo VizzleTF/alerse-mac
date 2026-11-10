@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Build Alerse for macOS: ungoogled-chromium-macos + Alerse patches.
 
-Injects the patches of the arcomium submodule into ungoogled-chromium-macos'
-patch series, arcomium/flags.gn into its GN flags and a step that copies
-arcomium/src and arcomium/branding over the source tree after patching, runs the upstream
+Injects the patches of the alerse submodule into ungoogled-chromium-macos'
+patch series, alerse/flags.gn into its GN flags and a step that copies
+alerse/src and alerse/branding over the source tree after patching, runs the upstream
 build.sh with ad-hoc signing, then restores the submodule. Extra arguments go
 to the upstream build.sh (for example `-d` to reuse the downloaded sources).
 
@@ -23,7 +23,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 UPSTREAM = ROOT / 'ungoogled-chromium-macos'
-CORE = ROOT / 'arcomium'
+CORE = ROOT / 'alerse'
 OUR_PATCHES = CORE / 'patches'
 OUR_FLAGS = CORE / 'flags.gn'
 OUR_BRANDING = CORE / 'branding'
@@ -35,7 +35,7 @@ OUR_RENAME = CORE / 'tools' / 'rename_product.py'
 # files and binary branding files are copied over the tree, not patched in, and
 # renaming the product in the strings moves hundreds of translations, which a
 # script does better than a patch. The script also numbers the release in
-# chrome/VERSION from arcomium/VERSION.
+# chrome/VERSION from alerse/VERSION.
 BRANDING_ANCHOR = 'python3 "$_main_repo/utils/domain_substitution.py"'
 BRANDING_STEP = ('cp -R {sources!r}/. "$_src_dir/"\n'
                  'cp -R {branding!r}/. "$_src_dir/"\n'
@@ -75,7 +75,7 @@ def main():
     series = UPSTREAM / 'patches' / 'series'
     flags = UPSTREAM / 'flags.macos.gn'
     upstream_build = UPSTREAM / 'build.sh'
-    injected = UPSTREAM / 'patches' / 'arcomium'
+    injected = UPSTREAM / 'patches' / 'alerse'
     originals = {p: p.read_text(encoding='utf-8')
                  for p in (series, flags, upstream_build)}
 
@@ -83,7 +83,7 @@ def main():
         if injected.exists():
             shutil.rmtree(injected)
         shutil.copytree(OUR_PATCHES, injected)
-        ours = ['arcomium/' + p for p in read_series(OUR_PATCHES / 'series')]
+        ours = ['alerse/' + p for p in read_series(OUR_PATCHES / 'series')]
         series.write_text(originals[series].rstrip('\n') + '\n' + '\n'.join(ours) + '\n',
                           encoding='utf-8')
         extra = OUR_FLAGS.read_text(encoding='utf-8') if OUR_FLAGS.exists() else ''
