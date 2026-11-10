@@ -15,6 +15,7 @@ names another one.
 """
 
 import os
+import shlex
 import shutil
 import subprocess
 import sys
@@ -37,9 +38,9 @@ OUR_RENAME = CORE / 'tools' / 'rename_product.py'
 # script does better than a patch. The script also numbers the release in
 # chrome/VERSION from alerse/VERSION.
 BRANDING_ANCHOR = 'python3 "$_main_repo/utils/domain_substitution.py"'
-BRANDING_STEP = ('cp -R {sources!r}/. "$_src_dir/"\n'
-                 'cp -R {branding!r}/. "$_src_dir/"\n'
-                 'python3 {rename!r} "$_src_dir"\n')
+BRANDING_STEP = ('cp -R {sources}/. "$_src_dir/"\n'
+                 'cp -R {branding}/. "$_src_dir/"\n'
+                 'python3 {rename} "$_src_dir"\n')
 
 # depot_tools needs Python 3.13 or older; Homebrew's python3 may be newer.
 PYTHON = '/opt/homebrew/bin/python3.13'
@@ -64,6 +65,18 @@ def read_series(path):
     return [line.strip() for line in lines if line.strip() and not line.startswith('#')]
 
 
+def check_clean(upstream, paths):
+    """Fails if an earlier run that was killed left its changes in `paths`.
+
+    They would be taken for the upstream files and the patches added twice."""
+    relative = [str(p.relative_to(upstream)) for p in paths]
+    changed = subprocess.run(['git', '-C', str(upstream), 'status', '--porcelain', '--', *relative],
+                             check=True, capture_output=True, text=True).stdout.strip()
+    if changed:
+        sys.exit(f'{upstream.name} has changes an interrupted build left:\n{changed}\n'
+                 f'Restore them: git -C {upstream} checkout -- {" ".join(relative)}')
+
+
 def main():
     if not Path(PYTHON).exists():
         sys.exit(f'{PYTHON} not found: brew install python@3.13')
@@ -76,6 +89,7 @@ def main():
     flags = UPSTREAM / 'flags.macos.gn'
     upstream_build = UPSTREAM / 'build.sh'
     injected = UPSTREAM / 'patches' / 'alerse'
+    check_clean(UPSTREAM, (series, flags, upstream_build))
     originals = {p: p.read_text(encoding='utf-8')
                  for p in (series, flags, upstream_build)}
 
@@ -92,10 +106,11 @@ def main():
         flags.write_text(originals[flags].rstrip('\n') + '\n' + extra, encoding='utf-8')
         if OUR_BRANDING.exists():
             text = originals[upstream_build]
-            if BRANDING_ANCHOR not in text:
+            if text.count(BRANDING_ANCHOR) != 1:
                 sys.exit('upstream build.sh changed: cannot add the branding step')
-            step = BRANDING_STEP.format(sources=str(OUR_SOURCES), branding=str(OUR_BRANDING),
-                                        rename=str(OUR_RENAME))
+            step = BRANDING_STEP.format(sources=shlex.quote(str(OUR_SOURCES)),
+                                        branding=shlex.quote(str(OUR_BRANDING)),
+                                        rename=shlex.quote(str(OUR_RENAME)))
             upstream_build.write_text(text.replace(BRANDING_ANCHOR, step + BRANDING_ANCHOR, 1),
                                       encoding='utf-8')
 
