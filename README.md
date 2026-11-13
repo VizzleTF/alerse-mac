@@ -91,12 +91,26 @@ block, with `mac_sdk_path = "//out/Release/sdk/selected_macos_sdk"` (a link to S
 OUT_DIR=out/Release ./package.sh v0.1.8  # an official build in out/Release
 ```
 
-Signs the app ad hoc and writes
+Signs the app and writes
 `ungoogled-chromium-macos/build/alerse_v0.1.8_macos_arm64.dmg`. The bundles keep the
-hardened runtime, but without a Developer ID library validation would reject the ad hoc
-signed framework (the Team IDs differ), so they are signed without the `library` option
-and with the `disable-library-validation` entitlement. The app is not notarized.
+hardened runtime, but without a Developer ID library validation would reject the
+framework (the Team IDs differ), so they are signed without the `library` option and
+with the `disable-library-validation` entitlement. The app is not notarized.
 `package.sh` stops if Chromium's signing script changes upstream.
+
+**Sign with the build Mac's own identity**, made once:
+
+```sh
+./signing-identity.sh          # "Alerse Self-Signed" in ~/.alerse-signing
+./signing-identity.sh export   # a base64 PKCS#12 backup, with the private key
+```
+
+With it, `package.sh` signs with that certificate instead of ad hoc. macOS ties a
+keychain item's "Always Allow" to the signing certificate, so users allow Alerse's
+access to "Chromium Safe Storage" once and keep it across updates. Ad hoc signatures
+change with every build, and macOS asked for the login password after each update.
+Keep the identity and a backup of it: a release signed with a new one asks once more.
+Without it, `package.sh` signs ad hoc as before.
 
 ### Resume or rebuild
 

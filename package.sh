@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Signs the built Alerse.app ad hoc and packages it into a dmg, with the
+# Signs the built Alerse.app, with the build Mac's own identity or else ad
+# hoc, and packages it into a dmg, with the
 # upstream sign_and_package_app.sh, which names the bundles Chromium.
 #
 #   ./package.sh [VERSION]   # build/alerse_VERSION_macos_arm64.dmg
@@ -51,6 +52,24 @@ if grep -q 'library,' "$script" || grep -q '\$_root_dir/entitlements' "$script" 
    [ "$(grep -c 'ALERSE_ENTITLEMENTS/library.plist' "$script")" -lt 7 ]; then
   echo "package.sh: sign_and_package_app.sh changed upstream; update package.sh" >&2
   exit 1
+fi
+# Sign with the build Mac's own identity (signing-identity.sh) when it has one:
+# its certificate stays the same from build to build, so macOS keeps the
+# keychain access a user allowed once. Ad hoc signatures change with every
+# build, and macOS asked for the login password after each update.
+SIGN_KEYCHAIN=$HOME/.alerse-signing/alerse-signing.keychain-db
+if [[ -f "$SIGN_KEYCHAIN" ]]; then
+  security unlock-keychain -p "$(cat "$HOME/.alerse-signing/keychain-password")" "$SIGN_KEYCHAIN"
+  python3 - "$script" "$SIGN_KEYCHAIN" <<'PY'
+import sys
+path, keychain = sys.argv[1], sys.argv[2]
+text = open(path).read()
+old = 'codesign --sign - --force "$@"'
+if text.count(old) != 1:
+    sys.exit("package.sh: the ad hoc sign() of sign_and_package_app.sh changed; update package.sh")
+new = 'codesign --sign "Alerse Self-Signed" --keychain "%s" --force "$@"' % keychain
+open(path, 'w').write(text.replace(old, new))
+PY
 fi
 chmod +x "$script"
 
