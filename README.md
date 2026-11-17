@@ -45,8 +45,8 @@ Trash. See [Name](https://github.com/VizzleTF/alerse/blob/main/docs/design.md#na
    at the top of the sidebar).
 
 Updates do not install themselves: download the new dmg and repeat steps 2–3. When a
-newer release is out, the app menu shows "Update to Alerse X.Y.Z", which opens its page;
-on macOS it counts pre-releases too, since every macOS build is one for now.
+newer release is out, the Alerse menu of the menu bar shows Update Available..., which
+opens its page; it counts pre-releases too, since every macOS build is one for now.
 Import from Another Browser is in the app menu from 0.1.7.
 
 ## Build from source
