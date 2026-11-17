@@ -41,11 +41,12 @@ Trash. See [Name](https://github.com/VizzleTF/alerse/blob/main/docs/design.md#na
    ```sh
    xattr -dr com.apple.quarantine /Applications/Alerse.app
    ```
-4. Open Alerse. To sync with your other devices, open `chrome://alerse-sync`.
+4. Open Alerse. To sync with your other devices, choose Sync in the app menu (the logo
+   at the top of the sidebar).
 
-Updates do not install themselves: download the new dmg and repeat steps 2–3. The
-app menu's "Update to Alerse X.Y.Z" item offers only full releases, never
-pre-releases, so while macOS builds are pre-releases check the Releases page by hand.
+Updates do not install themselves: download the new dmg and repeat steps 2–3. When a
+newer release is out, the app menu shows "Update to Alerse X.Y.Z", which opens its page;
+on macOS it counts pre-releases too, since every macOS build is one for now.
 Import from Another Browser is in the app menu from 0.1.7.
 
 ## Build from source
