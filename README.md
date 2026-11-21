@@ -127,6 +127,29 @@ Without it, `package.sh` signs ad hoc as before.
 | `could not load TAPI file ... unknown target` while linking `bindgen` | Chromium 156's linker cannot read macOS SDK 27 | Install SDK 26.5 with the Command Line Tools; `build.py` and `resume.sh` pick it |
 | `missing 'export module' declaration` in `precompile.h` | Precompiled headers in a non-official build | `--fast` turns them off; add `enable_precompiled_headers=false` to `args.gn` otherwise |
 
+## Where each release comes from
+
+A tag pins two submodules, but from 0.1.7 on they are not the exact source of the
+release: the core submodule (`arcomium` up to 0.1.9, then `alerse`) names the core commit whose changes the release carries,
+and that commit's series is for Chromium 157, which does not apply to the 156 base the
+other submodule pins. Every release is built on the build Mac in one Chromium 156 tree,
+`ungoogled-chromium-macos/build/src`, made by `build.py` from
+ungoogled-chromium-macos 31f0175 (156.0.8078.79) and the core's 156 series (the
+`chromium-156` branch); the core's later changes were applied to that tree by hand, as
+patches that apply to 156 as they are or rebased for it, and Alerse's own files were
+copied over it. The tree is then built and packaged as in
+[Making a release](https://github.com/VizzleTF/alerse/blob/main/docs/releasing.md#3-macos-alerse-mac).
+
+| Releases | Base | Core changes in the build | Tree |
+|---|---|---|---|
+| v156.0.8078.79-1 to -32, 0.1.0 | ungoogled-chromium-macos 31f0175 | The `arcomium` submodule at the tag, a 156 series that applies as it is | `build.py` output, `--fast` |
+| 0.1.7 to 0.1.24 | ungoogled-chromium-macos 31f0175 | The core submodule at the tag, applied by hand on the 156 series | The hand-kept 156 tree, official build in `out/Release` |
+
+`git ls-tree vX.Y.Z` shows a tag's two commits. The hand-made changes in the 156 tree
+are not published, so 0.1.7 to 0.1.24 cannot be rebuilt from this repository alone.
+Once ungoogled-chromium-macos is on 157, `build.py` builds the core series at the tag
+as it is, and a tag is again the whole source of its release.
+
 ## Change the patches
 
 Patches live in the `alerse` submodule; see
