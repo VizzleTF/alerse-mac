@@ -12,7 +12,7 @@ ungoogled-chromium. This repository builds the
 [ungoogled-chromium-macos](https://github.com/ungoogled-software/ungoogled-chromium-macos);
 both are git submodules.
 
-Builds for Apple Silicon, on Chromium 156 until ungoogled-chromium-macos releases 157.
+Builds for Apple Silicon, on Chromium 157.0.8103.78 (ungoogled-chromium-macos 157.0.8103.78-1.1).
 Builds are made locally, not in CI. Releases are pre-releases; up to 0.1.0 they were
 `--fast` builds, from 0.1.7 official ones (ThinLTO and PGO).
 
