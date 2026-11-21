@@ -47,6 +47,10 @@ sed -e 's/Chromium/Alerse/g' \
   -e 's|"\$_root_dir/entitlements/|"$ALERSE_ENTITLEMENTS/|g' \
   -e 's|--options restrict,runtime,kill "|--options restrict,runtime,kill --entitlements "$ALERSE_ENTITLEMENTS/library.plist" "|' \
   "$UPSTREAM/sign_and_package_app.sh" > "$script"
+# The Aperitif helpers (Chromium 157) load libaperitif.dylib through an
+# @executable_path install name, which macOS refuses in a process signed with
+# "restrict": they crashed at launch and took the GPU process with them.
+sed -i "" -e "/(Aperitif/s/--options restrict,/--options /" "$script"
 # Fail rather than sign differently when the upstream script changes.
 if grep -q 'library,' "$script" || grep -q '\$_root_dir/entitlements' "$script" ||
    [ "$(grep -c 'ALERSE_ENTITLEMENTS/library.plist' "$script")" -lt 7 ]; then
